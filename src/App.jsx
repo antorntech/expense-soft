@@ -1,33 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Header Component
-const Header = () => {
-  return (
-    <div className="flex items-center justify-between bg-gray-200 px-5 py-3 rounded-md">
-      <div>
-        <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-          <span className="text-white text-2xl font-bold">L</span>
-        </div>
-      </div>
-      <div>
-        <ul className="flex items-center gap-5">
-          <li>HOME</li>
-          <li>APP</li>
-          <li>ACCOUNT</li>
-          <li>EXPORT</li>
-        </ul>
-      </div>
-      <div>
-        <button className="bg-green-600 text-white px-4 py-2 rounded-md">
-          Get App
-        </button>
+const Header = () => (
+  <div className="flex items-center justify-between bg-gray-200 px-5 py-3 rounded-md">
+    <div>
+      <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+        <span className="text-white text-2xl font-bold">L</span>
       </div>
     </div>
-  );
-};
+    <div>
+      <ul className="flex items-center gap-5">
+        <li>HOME</li>
+        <li>APP</li>
+        <li>ACCOUNT</li>
+        <li>EXPORT</li>
+      </ul>
+    </div>
+    <button className="bg-green-600 text-white px-4 py-2 rounded-md">
+      Get App
+    </button>
+  </div>
+);
 
 // Expense Tracker Form Component
-const ExpenseTrackerForm = ({ addTransaction }) => {
+const ExpenseTrackerForm = ({
+  addTransaction,
+  isEditing,
+  transactionToEdit,
+  updateTransaction,
+}) => {
   const [isExpense, setIsExpense] = useState(true);
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
@@ -36,16 +37,31 @@ const ExpenseTrackerForm = ({ addTransaction }) => {
   const expenseCategories = ["Education", "Food", "Transport", "Shopping"];
   const incomeCategories = ["Salary", "Business", "Investments", "Gifts"];
 
+  // UseEffect to populate the form with values when editing
+  useEffect(() => {
+    if (isEditing && transactionToEdit) {
+      setIsExpense(transactionToEdit.type === "Expense");
+      setCategory(transactionToEdit.category);
+      setAmount(transactionToEdit.amount);
+      setDate(transactionToEdit.date);
+    }
+  }, [isEditing, transactionToEdit]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const transaction = {
+      id: isEditing ? transactionToEdit.id : Date.now(),
       type: isExpense ? "Expense" : "Income",
       category,
       amount: parseFloat(amount),
       date,
     };
 
-    addTransaction(transaction);
+    if (isEditing) {
+      updateTransaction(transaction);
+    } else {
+      addTransaction(transaction);
+    }
 
     // Reset form
     setCategory("");
@@ -88,17 +104,13 @@ const ExpenseTrackerForm = ({ addTransaction }) => {
             required
           >
             <option value="">Select Category</option>
-            {isExpense
-              ? expenseCategories.map((cat, idx) => (
-                  <option key={idx} value={cat}>
-                    {cat}
-                  </option>
-                ))
-              : incomeCategories.map((cat, idx) => (
-                  <option key={idx} value={cat}>
-                    {cat}
-                  </option>
-                ))}
+            {(isExpense ? expenseCategories : incomeCategories).map(
+              (cat, idx) => (
+                <option key={idx} value={cat}>
+                  {cat}
+                </option>
+              )
+            )}
           </select>
         </div>
 
@@ -128,7 +140,7 @@ const ExpenseTrackerForm = ({ addTransaction }) => {
           type="submit"
           className="w-full bg-teal-500 text-white p-2 rounded-md"
         >
-          Save
+          {isEditing ? "Update" : "Save"}
         </button>
       </form>
     </div>
@@ -138,9 +150,34 @@ const ExpenseTrackerForm = ({ addTransaction }) => {
 // Main Application Component
 function App() {
   const [transactions, setTransactions] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState(null);
 
   const addTransaction = (transaction) => {
     setTransactions([...transactions, transaction]);
+  };
+
+  const editTransaction = (transaction) => {
+    setIsEditing(true);
+    setTransactionToEdit(transaction);
+  };
+
+  const updateTransaction = (updatedTransaction) => {
+    setTransactions(
+      transactions.map((transaction) =>
+        transaction.id === updatedTransaction.id
+          ? updatedTransaction
+          : transaction
+      )
+    );
+    setIsEditing(false);
+    setTransactionToEdit(null);
+  };
+
+  const deleteTransaction = (id) => {
+    setTransactions(
+      transactions.filter((transaction) => transaction.id !== id)
+    );
   };
 
   const totalIncome = transactions
@@ -175,25 +212,42 @@ function App() {
         {/* Main Content */}
         <div className="grid grid-cols-3 gap-5 py-5">
           <div className="col-span-1">
-            <ExpenseTrackerForm addTransaction={addTransaction} />
+            <ExpenseTrackerForm
+              addTransaction={addTransaction}
+              isEditing={isEditing}
+              transactionToEdit={transactionToEdit}
+              updateTransaction={updateTransaction}
+            />
           </div>
           <div className="col-span-2">
             <div className="grid grid-cols-2 gap-5">
               {/* Income Section */}
               <div className="bg-white p-5 rounded-lg shadow-lg">
-                <h2 className="text-lg font-semibold flex justify-between">
-                  <span>Income</span>
-                </h2>
+                <h2 className="text-lg font-semibold">Income</h2>
                 <ul className="mt-4">
                   {transactions
                     .filter((t) => t.type === "Income")
-                    .map((transaction, index) => (
+                    .map((transaction) => (
                       <li
-                        key={index}
-                        className="flex justify-between border-b py-2"
+                        key={transaction.id}
+                        className="flex justify-between items-center border-b py-2"
                       >
                         <span>{transaction.category}</span>
                         <span>BDT {transaction.amount}</span>
+                        <div>
+                          <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            onClick={() => editTransaction(transaction)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="bg-red-500 text-white px-2 py-1 rounded"
+                            onClick={() => deleteTransaction(transaction.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </li>
                     ))}
                 </ul>
@@ -201,19 +255,31 @@ function App() {
 
               {/* Expense Section */}
               <div className="bg-white p-5 rounded-lg shadow-lg">
-                <h2 className="text-lg font-semibold flex justify-between">
-                  <span>Expense</span>
-                </h2>
+                <h2 className="text-lg font-semibold">Expense</h2>
                 <ul className="mt-4">
                   {transactions
                     .filter((t) => t.type === "Expense")
-                    .map((transaction, index) => (
+                    .map((transaction) => (
                       <li
-                        key={index}
-                        className="flex justify-between border-b py-2"
+                        key={transaction.id}
+                        className="flex justify-between items-center border-b py-2"
                       >
                         <span>{transaction.category}</span>
                         <span>BDT {transaction.amount}</span>
+                        <div>
+                          <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                            onClick={() => editTransaction(transaction)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="bg-red-500 text-white px-2 py-1 rounded"
+                            onClick={() => deleteTransaction(transaction.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </li>
                     ))}
                 </ul>
