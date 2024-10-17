@@ -156,7 +156,8 @@ function App() {
   const [selectedExpenseCategories, setSelectedExpenseCategories] = useState(
     []
   );
-  const [sortOrder, setSortOrder] = useState(""); // New state for sorting
+  const [incomeSortOrder, setIncomeSortOrder] = useState(""); // Income sorting state
+  const [expenseSortOrder, setExpenseSortOrder] = useState(""); // Expense sorting state
 
   const expenseCategories = ["Education", "Food", "Transport", "Shopping"];
   const incomeCategories = ["Salary", "Business", "Investments", "Gifts"];
@@ -204,11 +205,15 @@ function App() {
     }
   };
 
-  const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
+  const handleIncomeSortChange = (e) => {
+    setIncomeSortOrder(e.target.value);
   };
 
-  const sortTransactions = (transactionsList) => {
+  const handleExpenseSortChange = (e) => {
+    setExpenseSortOrder(e.target.value);
+  };
+
+  const sortTransactions = (transactionsList, sortOrder) => {
     if (sortOrder === "low-to-high") {
       return transactionsList.sort((a, b) => a.amount - b.amount);
     } else if (sortOrder === "high-to-low") {
@@ -223,7 +228,8 @@ function App() {
         t.type === "Income" &&
         (selectedIncomeCategories.length === 0 ||
           selectedIncomeCategories.includes(t.category))
-    )
+    ),
+    incomeSortOrder
   );
 
   const filteredExpenseTransactions = sortTransactions(
@@ -232,7 +238,8 @@ function App() {
         t.type === "Expense" &&
         (selectedExpenseCategories.length === 0 ||
           selectedExpenseCategories.includes(t.category))
-    )
+    ),
+    expenseSortOrder
   );
 
   const totalIncome = filteredIncomeTransactions.reduce(
@@ -305,8 +312,8 @@ function App() {
                 <div className="mb-4">
                   <label className="font-medium mr-2">Sort by Amount:</label>
                   <select
-                    value={sortOrder}
-                    onChange={handleSortChange}
+                    value={incomeSortOrder}
+                    onChange={handleIncomeSortChange}
                     className="border p-2 rounded-md"
                   >
                     <option value="">Select</option>
@@ -380,8 +387,8 @@ function App() {
                 <div className="mb-4">
                   <label className="font-medium mr-2">Sort by Amount:</label>
                   <select
-                    value={sortOrder}
-                    onChange={handleSortChange}
+                    value={expenseSortOrder}
+                    onChange={handleExpenseSortChange}
                     className="border p-2 rounded-md"
                   >
                     <option value="">Select</option>
@@ -390,7 +397,7 @@ function App() {
                   </select>
                 </div>
 
-                {/* Expense Table */}
+                {/* Expense Table here */}
                 <table className="w-full table-auto border-collapse">
                   <thead>
                     <tr>
