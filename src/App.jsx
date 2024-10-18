@@ -1,26 +1,7 @@
 import React, { useState, useEffect } from "react";
-
-// Header Component
-const Header = () => (
-  <div className="flex items-center justify-between bg-gray-200 px-5 py-3 rounded-md">
-    <div>
-      <div className="w-12 h-12 bg-[#425194] rounded-full flex items-center justify-center">
-        <span className="text-white text-2xl font-bold">L</span>
-      </div>
-    </div>
-    <div>
-      <ul className="flex items-center gap-5">
-        <li>HOME</li>
-        <li>APP</li>
-        <li>ACCOUNT</li>
-        <li>EXPORT</li>
-      </ul>
-    </div>
-    <button className="bg-[#425194] text-white px-4 py-2 rounded-md">
-      Get App
-    </button>
-  </div>
-);
+import { GoSortDesc } from "react-icons/go";
+import { MdFilterCenterFocus } from "react-icons/md";
+import Header from "./components/shared/Header";
 
 // Expense Tracker Form Component
 const ExpenseTrackerForm = ({
@@ -151,6 +132,10 @@ const ExpenseTrackerForm = ({
 function App() {
   const [transactions, setTransactions] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [showIncomeSort, setShowIncomeSort] = useState(false);
+  const [showIncomeFilter, setShowIncomeFilter] = useState(false);
+  const [showExpenseSort, setShowExpenseSort] = useState(false);
+  const [showExpenseFilter, setShowExpenseFilter] = useState(false);
   const [transactionToEdit, setTransactionToEdit] = useState(null);
   const [selectedIncomeCategories, setSelectedIncomeCategories] = useState([]);
   const [selectedExpenseCategories, setSelectedExpenseCategories] = useState(
@@ -287,50 +272,62 @@ function App() {
             <div className="grid grid-cols-2 gap-5">
               {/* Income Section */}
               <div className="bg-white p-5 rounded-lg shadow-lg">
-                <div className="font-semibold bg-[#425194] text-white py-2 px-4 rounded-md">
-                  INCOME LIST
-                </div>
-
-                {/* Income Filter */}
-                <div className="mb-4">
-                  <h4 className="font-medium mb-2">Filter by Category:</h4>
-                  {incomeCategories.map((category, idx) => (
-                    <label key={idx} className="mr-2">
-                      <input
-                        type="checkbox"
-                        value={category}
-                        checked={selectedIncomeCategories.includes(category)}
-                        onChange={() =>
-                          handleCategoryChange(category, "income")
-                        }
-                        className="mr-1"
+                <div className="flex items-center justify-between font-semibold bg-[#425194] text-white py-2 px-4 rounded-md">
+                  <h2>INCOME LIST</h2>
+                  <div className="flex items-center space-x-2">
+                    <div>
+                      <GoSortDesc
+                        className="size-8 cursor-pointer"
+                        onClick={() => setShowIncomeSort(!showIncomeSort)}
                       />
-                      {category}
-                    </label>
-                  ))}
+                    </div>
+                    <div>
+                      <MdFilterCenterFocus
+                        className="size-6 cursor-pointer"
+                        onClick={() => setShowIncomeFilter(!showIncomeFilter)}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Sorting Dropdown */}
-                <div className="mb-4">
-                  <label className="font-medium mr-2">Sort by Amount:</label>
+                {showIncomeSort && (
                   <select
+                    className="w-full border p-2 rounded-md mb-2"
                     value={incomeSortOrder}
                     onChange={handleIncomeSortChange}
-                    className="border p-2 rounded-md"
                   >
-                    <option value="">Select</option>
+                    <option value="">Sort by</option>
                     <option value="low-to-high">Low to High</option>
                     <option value="high-to-low">High to Low</option>
                   </select>
-                </div>
+                )}
+
+                {showIncomeFilter && (
+                  <div className="mb-2 p-2">
+                    {incomeCategories.map((category, idx) => (
+                      <label key={idx} className="mr-2">
+                        <input
+                          type="checkbox"
+                          value={category}
+                          checked={selectedIncomeCategories.includes(category)}
+                          onChange={() =>
+                            handleCategoryChange(category, "income")
+                          }
+                          className="mr-1"
+                        />
+                        {category}
+                      </label>
+                    ))}
+                  </div>
+                )}
 
                 {/* Income Table */}
-                <table className="w-full table-auto border-collapse">
+                <table className="w-full table-auto">
                   <thead>
-                    <tr>
-                      <th className="border px-4 py-2">Category</th>
-                      <th className="border px-4 py-2">Amount</th>
-                      <th className="border px-4 py-2">Actions</th>
+                    <tr className="border-b border-b-gray-400">
+                      <th className="px-4 py-2">Category</th>
+                      <th className="px-4 py-2">Amount</th>
+                      <th className="px-4 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -364,50 +361,62 @@ function App() {
 
               {/* Expense Section */}
               <div className="bg-white p-5 rounded-lg shadow-lg">
-                <div className="font-semibold bg-[#425194] text-white py-2 px-4 rounded-md">
-                  EXPENSE LIST
-                </div>
-
-                {/* Expense Filter */}
-                <div className="mb-4">
-                  <h4 className="font-medium mb-2">Filter by Category:</h4>
-                  {expenseCategories.map((category, idx) => (
-                    <label key={idx} className="mr-2">
-                      <input
-                        type="checkbox"
-                        value={category}
-                        checked={selectedExpenseCategories.includes(category)}
-                        onChange={() =>
-                          handleCategoryChange(category, "expense")
-                        }
-                        className="mr-1"
+                <div className="flex items-center justify-between font-semibold bg-[#425194] text-white py-2 px-4 rounded-md">
+                  <h2>EXPENSE LIST</h2>
+                  <div className="flex items-center space-x-2">
+                    <div>
+                      <GoSortDesc
+                        className="size-8 cursor-pointer"
+                        onClick={() => setShowExpenseSort(!showExpenseSort)}
                       />
-                      {category}
-                    </label>
-                  ))}
+                    </div>
+                    <div>
+                      <MdFilterCenterFocus
+                        className="size-6 cursor-pointer"
+                        onClick={() => setShowExpenseFilter(!showExpenseFilter)}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Sorting Dropdown */}
-                <div className="mb-4">
-                  <label className="font-medium mr-2">Sort by Amount:</label>
+                {showExpenseSort && (
                   <select
+                    className="w-full border p-2 rounded-md mb-2"
                     value={expenseSortOrder}
                     onChange={handleExpenseSortChange}
-                    className="border p-2 rounded-md"
                   >
-                    <option value="">Select</option>
+                    <option value="">Sort by</option>
                     <option value="low-to-high">Low to High</option>
                     <option value="high-to-low">High to Low</option>
                   </select>
-                </div>
+                )}
+
+                {showExpenseFilter && (
+                  <div className="mb-2 p-2">
+                    {expenseCategories.map((category, idx) => (
+                      <label key={idx} className="mr-2">
+                        <input
+                          type="checkbox"
+                          value={category}
+                          checked={selectedExpenseCategories.includes(category)}
+                          onChange={() =>
+                            handleCategoryChange(category, "income")
+                          }
+                          className="mr-1"
+                        />
+                        {category}
+                      </label>
+                    ))}
+                  </div>
+                )}
 
                 {/* Expense Table here */}
-                <table className="w-full table-auto border-collapse">
+                <table className="w-full table-auto">
                   <thead>
-                    <tr>
-                      <th className="border px-4 py-2">Category</th>
-                      <th className="border px-4 py-2">Amount</th>
-                      <th className="border px-4 py-2">Actions</th>
+                    <tr className="border-b border-b-gray-400">
+                      <th className="px-4 py-2">Category</th>
+                      <th className="px-4 py-2">Amount</th>
+                      <th className="px-4 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
