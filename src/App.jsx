@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 const Header = () => (
   <div className="flex items-center justify-between bg-gray-200 px-5 py-3 rounded-md">
     <div>
-      <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+      <div className="w-12 h-12 bg-[#425194] rounded-full flex items-center justify-center">
         <span className="text-white text-2xl font-bold">L</span>
       </div>
     </div>
@@ -16,7 +16,7 @@ const Header = () => (
         <li>EXPORT</li>
       </ul>
     </div>
-    <button className="bg-green-600 text-white px-4 py-2 rounded-md">
+    <button className="bg-[#425194] text-white px-4 py-2 rounded-md">
       Get App
     </button>
   </div>
@@ -77,16 +77,16 @@ const ExpenseTrackerForm = ({
       <div className="flex space-x-2 mb-4">
         <button
           onClick={() => setIsExpense(true)}
-          className={`px-4 py-2 rounded-md ${
-            isExpense ? "bg-teal-500 text-white" : "bg-gray-200"
+          className={`w-full px-4 py-2 rounded-md ${
+            isExpense ? "bg-[#425194] text-white" : "bg-gray-200"
           }`}
         >
           Expense
         </button>
         <button
           onClick={() => setIsExpense(false)}
-          className={`px-4 py-2 rounded-md ${
-            !isExpense ? "bg-teal-500 text-white" : "bg-gray-200"
+          className={`w-full px-4 py-2 rounded-md ${
+            !isExpense ? "bg-[#425194] text-white" : "bg-gray-200"
           }`}
         >
           Income
@@ -138,7 +138,7 @@ const ExpenseTrackerForm = ({
 
         <button
           type="submit"
-          className="w-full bg-teal-500 text-white p-2 rounded-md"
+          className="w-full bg-[#425194] text-white p-2 rounded-md"
         >
           {isEditing ? "Update" : "Save"}
         </button>
@@ -287,7 +287,9 @@ function App() {
             <div className="grid grid-cols-2 gap-5">
               {/* Income Section */}
               <div className="bg-white p-5 rounded-lg shadow-lg">
-                <h2 className="text-lg font-semibold">Income</h2>
+                <div className="font-semibold bg-[#425194] text-white py-2 px-4 rounded-md">
+                  INCOME LIST
+                </div>
 
                 {/* Income Filter */}
                 <div className="mb-4">
@@ -362,7 +364,9 @@ function App() {
 
               {/* Expense Section */}
               <div className="bg-white p-5 rounded-lg shadow-lg">
-                <h2 className="text-lg font-semibold">Expense</h2>
+                <div className="font-semibold bg-[#425194] text-white py-2 px-4 rounded-md">
+                  EXPENSE LIST
+                </div>
 
                 {/* Expense Filter */}
                 <div className="mb-4">
