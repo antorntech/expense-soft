@@ -17,7 +17,7 @@ const Header = () => {
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center justify-between px-3">
         <Link to="/">
-          <img src="./logo.png" alt="logo" className="w-[120px]" />
+          <img src="./logo.png" alt="logo" className="w-[140px]" />
         </Link>
         <ul className="flex items-center gap-5">
           {myMenus.map((menu) => (
@@ -33,8 +33,14 @@ const Header = () => {
             </li>
           ))}
         </ul>
-        <button className="bg-[#425194] text-white px-4 py-2 rounded-md">
-          Get App
+        <button
+          className="bg-[#425194] text-white px-4 py-2 rounded-md"
+          onClick={() => {
+            localStorage.removeItem("user");
+            window.location.reload();
+          }}
+        >
+          Log Out
         </button>
       </div>
 
