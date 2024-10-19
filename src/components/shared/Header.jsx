@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaHamburger } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
 import { Link, NavLink } from "react-router-dom";
@@ -8,97 +7,88 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const myMenus = [
-    {
-      label: "HOME",
-      path: "/",
-    },
-    {
-      label: "ABOUT",
-      path: "/about",
-    },
-    {
-      label: "CONTACT",
-      path: "/contact",
-    },
+    { label: "HOME", path: "/" },
+    { label: "ABOUT", path: "/about" },
+    { label: "CONTACT", path: "/contact" },
   ];
+
   return (
-    <>
+    <header className="bg-gray-200 px-3 md:px-0 py-3 rounded-md">
       {/* Desktop Menu */}
-      <div className="hidden md:flex items-center justify-between bg-gray-200 px-5 py-3 rounded-md">
-        <div>
-          <img src="./logo.png" alt="" />
-        </div>
-        <div>
-          <ul className="flex items-center gap-5">
-            {myMenus.map((menu) => (
-              <li key={menu.path}>
-                <NavLink
-                  to={menu.path}
-                  className={({ isActive }) =>
-                    isActive ? "text-[#425194] font-semibold" : "font-semibold"
-                  }
-                >
-                  {menu.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="hidden md:flex items-center justify-between px-3">
+        <Link to="/">
+          <img src="./logo.png" alt="logo" className="w-[120px]" />
+        </Link>
+        <ul className="flex items-center gap-5">
+          {myMenus.map((menu) => (
+            <li key={menu.path}>
+              <NavLink
+                to={menu.path}
+                className={({ isActive }) =>
+                  isActive ? "text-[#425194] font-semibold" : "font-semibold"
+                }
+              >
+                {menu.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
         <button className="bg-[#425194] text-white px-4 py-2 rounded-md">
           Get App
         </button>
       </div>
 
       {/* Mobile Menu */}
-      <div className="md:hidden overflow-hidden">
-        <div className="py-1 flex items-center justify-between lg:hidden">
+      <div className="md:hidden">
+        {/* Mobile Menu Header with Icon */}
+        <div className="flex items-center justify-between">
           <button onClick={() => setMenuOpen(!menuOpen)}>
-            {!menuOpen ? (
-              <GiHamburgerMenu className="text-2xl" />
-            ) : (
+            {menuOpen ? (
               <RxCross2 className="text-2xl" />
+            ) : (
+              <GiHamburgerMenu className="text-2xl" />
             )}
           </button>
-          <div>
-            <Link to="/">
-              <img src="./logo.png" alt="logo.png" className="w-[120px]" />
-            </Link>
-          </div>
+          <Link to="/">
+            <img src="./logo.png" alt="logo" className="w-[120px]" />
+          </Link>
         </div>
 
-        {/* Mobile menu container with transition */}
+        {/* Mobile Menu Items with Transition */}
         <div
-          className={`flex flex-col gap-2 overflow-hidden transition-all duration-500 ease-in-out ${
+          className={`transition-all duration-500 ease-in-out ${
             menuOpen ? "max-h-[500px] py-3" : "max-h-0"
-          }`}
+          } overflow-hidden`}
         >
-          {myMenus.map((item, index) => {
-            return (
-              <NavLink
-                key={index}
-                to={item.path}
-                onClick={() => setMenuOpen(!menuOpen)}
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-yellow-700 text-[16px] font-semibold transition duration-300"
-                    : "text-black text-[16px] font-[500] hover:text-yellow-600 transition duration-300"
-                }
+          <ul className="flex flex-col gap-3 mt-3">
+            {myMenus.map((item, index) => (
+              <li key={index}>
+                <NavLink
+                  to={item.path}
+                  onClick={() => setMenuOpen(false)} // Close menu on click
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-yellow-700 text-[16px] font-semibold"
+                      : "text-black text-[16px] font-medium hover:text-yellow-600"
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+            <li>
+              <Link
+                to="/"
+                className="p-2 text-[12px] bg-[#425194] text-white rounded-md shadow-lg"
+                onClick={() => setMenuOpen(false)} // Close menu on click
               >
-                {item.label}
-              </NavLink>
-            );
-          })}
-          <div>
-            <Link
-              to="/fleet"
-              className="p-2 text-[12px] bg-[#425194] text-white rounded-md shadow-lg"
-            >
-              Get App
-            </Link>
-          </div>
+                Get App
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
-    </>
+    </header>
   );
 };
 
